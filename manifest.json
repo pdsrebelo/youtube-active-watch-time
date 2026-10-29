@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube Active Watch Time",
+  "version": "0.1.0",
+  "description": "Counts time spent actively watching visible, playing YouTube videos, including Picture-in-Picture. Paused, buffering and ordinary background playback are excluded.",
+  "permissions": ["storage"],
+  "host_permissions": ["https://www.youtube.com/*"],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "YouTube Active Watch Time",
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "48": "icons/icon-48.svg",
+      "96": "icons/icon-96.svg"
+    }
+  },
+  "icons": {
+    "48": "icons/icon-48.svg",
+    "96": "icons/icon-96.svg"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "youtube-active-watch-time@pedro-rebelo",
+      "strict_min_version": "127.0"
+    }
+  }
+}
