@@ -3,7 +3,7 @@
 const DAILY_TOTALS_KEY = "dailyWatchSeconds";
 const TODAY_VIDEOS_KEY = "todayVideoWatch";
 const LAST_BUCKET_KEY = "lastCountedEpochSecond";
-const BADGE_BACKGROUND_COLOR = "#b3261e";
+const BADGE_BACKGROUND_COLOR = "#303238";
 const BADGE_TEXT_COLOR = "#ffffff";
 let currentBadgeText = null;
 

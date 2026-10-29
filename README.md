@@ -2,7 +2,7 @@
 
 A private Firefox extension that counts real elapsed time while a YouTube video is playing, advancing, and visibly available either in its Firefox tab or through Picture-in-Picture.
 
-## Version 0.4 rules
+## Version 0.5 rules
 
 Counts:
 
@@ -24,15 +24,19 @@ Does not count:
 
 Two simultaneous qualifying videos are globally capped to approximately one counted second per real second.
 
-## Toolbar badge
+## Toolbar icon and badge
 
-The toolbar badge displays a compact form of the same daily total shown as **Active Watch Time** in the popup.
+The toolbar uses a simplified red-and-white play icon. The previous clock detail was removed because the native Firefox badge already communicates time.
+
+The badge uses a charcoal background with white text so it remains visually distinct from the red icon. It displays a compact form of the same daily total shown as **Active Watch Time** in the popup:
 
 - Below one hour: `0m` to `59m`
 - From one hour through nine hours: `1h00` to `9h59`
 - At ten hours or more: whole hours, such as `10h`
 
 The badge omits seconds and changes only when its displayed value changes. It is restored from `browser.storage.local` when Firefox or the extension starts, and it immediately reflects **Reset today**.
+
+Firefox controls the badge font, size, padding, shape, and exact position. The extension controls only the badge text and colours.
 
 ## Picture-in-Picture
 
@@ -86,15 +90,15 @@ web-ext lint
 web-ext run
 ```
 
-## Version 0.4 acceptance tests
+## Version 0.5 acceptance tests
 
-1. Load or reload the extension. Expect the badge to show today's compact total immediately.
-2. Watch until the next full minute. Expect the badge to advance once at the minute boundary.
-3. Pause the video. Expect the badge not to change.
-4. Open the popup. Expect the precise total to match the badge's compact representation.
-5. Confirm **Reset today**. Expect the popup to show `0s` and the badge to show `0m`.
-6. Reload the extension or restart Firefox. Expect the badge to restore today's stored total.
-7. Confirm that clickable videos, PiP, visibility, navigation, and the video breakdown still behave as in version 0.3.
+1. Reload the extension. Confirm that the toolbar icon contains only the red background and white play symbol.
+2. Confirm that the badge background is charcoal and visually distinct from the red icon.
+3. Confirm that the badge text format remains unchanged, for example `24m`, `1h05`, and `10h`.
+4. Open the popup and confirm that the precise total matches the badge's compact representation.
+5. Confirm that **Reset today** changes the popup to `0s` and the badge to `0m`.
+6. Reload the extension or restart Firefox. Confirm that the badge restores today's stored total.
+7. Confirm that counting, clickable videos, PiP, navigation, and the daily breakdown still behave as in version 0.4.
 
 ## Package
 

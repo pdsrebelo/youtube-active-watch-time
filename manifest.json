@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "YouTube Active Watch Time",
-  "version": "0.4.0",
-  "description": "Counts active YouTube watch time with a daily per-video breakdown, clickable entries, and a toolbar badge showing today’s total.",
+  "version": "0.5.0",
+  "description": "Counts active YouTube watch time with a daily per-video breakdown, clickable entries, and a compact toolbar badge for today’s total.",
   "permissions": [
     "storage"
   ],
