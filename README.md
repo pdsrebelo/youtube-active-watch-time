@@ -2,7 +2,7 @@
 
 A private Firefox extension that counts real elapsed time while a YouTube video is playing, advancing, and visibly available either in its Firefox tab or through Picture-in-Picture.
 
-## Version 0.2 rules
+## Version 0.3 rules
 
 Counts:
 
@@ -48,13 +48,15 @@ For each video, the extension stores:
 - The video title
 - The amount of active watch time attributed to that video
 
-Normal videos and live streams are stored separately using their YouTube video IDs. YouTube Shorts are grouped under one `YouTube Shorts` entry.
+Normal videos and live streams are stored separately using their YouTube video IDs. Their titles are clickable and open the video in a new Firefox tab. Video IDs are validated before a link is created.
+
+YouTube Shorts are grouped under one `YouTube Shorts` entry and are not clickable because that entry can represent multiple Shorts. Unknown video entries are also not clickable.
 
 Advertisements are attributed to the video page being watched. The extension does not attempt to detect advertisements separately.
 
 The detailed video breakdown is retained only for the current day. Historical daily totals are retained, but historical video titles and IDs are not. The breakdown remains entirely local in `browser.storage.local`.
 
-Reset today deletes both today's total watch time and today's per-video breakdown.
+Reset today asks for confirmation and then deletes both today's total watch time and today's per-video breakdown.
 
 ## Develop in VS Code
 
@@ -74,23 +76,15 @@ web-ext lint
 web-ext run
 ```
 
-## Acceptance tests
+## Version 0.3 acceptance tests
 
-1. Play normally for 2 minutes. Expect approximately 2 minutes.
-2. Pause for 2 minutes. Expect no increase.
-3. Switch to another Firefox tab without PiP for 2 minutes. Expect no increase.
-4. Keep YouTube visible on one monitor and focus another program. Expect an increase.
-5. Use split screen with YouTube visible. Expect an increase.
-6. Minimize Firefox without PiP. Expect no increase.
-7. Play at 2x speed for 2 real minutes. Expect approximately 2 minutes.
-8. Seek forward in the video. Expect no artificial increase.
-9. Play a video in PiP for 2 minutes. Expect approximately 2 minutes.
-10. Pause the video in PiP. Expect no increase.
-11. Keep PiP playing while Firefox is minimized. Expect an increase.
-12. Navigate to another normal video in the same tab. Expect a separate breakdown entry.
-13. Reset today. Expect today's total and video breakdown to be cleared.
-
-Allow a tolerance of a few seconds because playback is sampled at approximately one-second intervals.
+1. Expand today's video breakdown.
+2. Click a normal video title. Expect it to open in a new Firefox tab.
+3. Activate the title with the keyboard. Expect Enter or Space to open it.
+4. Confirm that `YouTube Shorts` and `Unknown YouTube video` have no link indicator and cannot be opened.
+5. Select **Reset today**, then cancel the confirmation. Expect no data to be deleted.
+6. Select **Reset today**, then accept the confirmation. Expect today's total and breakdown to be cleared.
+7. Confirm that normal playback, pause, PiP, visibility, navigation, and live popup updates still behave as in version 0.2.
 
 ## Package
 

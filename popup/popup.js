@@ -1,4 +1,5 @@
 "use strict";
+
 const DAILY_TOTALS_KEY = "dailyWatchSeconds";
 const TODAY_VIDEOS_KEY = "todayVideoWatch";
 const INITIAL_VIDEO_LIMIT = 5;
@@ -13,19 +14,67 @@ function formatDuration(value) {
   const hours = Math.floor(total / 3600);
   const minutes = Math.floor((total % 3600) / 60);
   const seconds = total % 60;
-  if (hours)
+
+  if (hours) {
     return `${hours}h ${String(minutes).padStart(2, "0")}m ${String(seconds).padStart(2, "0")}s`;
-  if (minutes)
+  }
+  if (minutes) {
     return `${minutes}m ${String(seconds).padStart(2, "0")}s`;
+  }
   return `${seconds}s`;
 }
 
+function isLinkableVideoId(videoId) {
+  return /^[A-Za-z0-9_-]{11}$/.test(videoId);
+}
+
 function getSortedVideos(data, day) {
-  if (!data || data.date !== day || !data.videos || typeof data.videos !== "object") return [];
+  if (!data || data.date !== day || !data.videos || typeof data.videos !== "object") {
+    return [];
+  }
+
   return Object.entries(data.videos)
-    .map(([id, item]) => ({ id, title: item.title || "Unknown YouTube video", seconds: Number(item.seconds) || 0 }))
+    .map(([id, item]) => ({
+      id,
+      title: item.title || "Unknown YouTube video",
+      seconds: Number(item.seconds) || 0
+    }))
     .filter((item) => item.seconds > 0)
     .sort((a, b) => b.seconds - a.seconds);
+}
+
+function createVideoTitle(video) {
+  if (!isLinkableVideoId(video.id)) {
+    const title = document.createElement("span");
+    title.className = "video-title";
+    title.textContent = video.title;
+    title.title = video.title;
+    return title;
+  }
+
+  const linkButton = document.createElement("button");
+  linkButton.className = "video-link";
+  linkButton.type = "button";
+  linkButton.title = `Open ${video.title} on YouTube in a new tab`;
+  linkButton.setAttribute("aria-label", `Open ${video.title} on YouTube in a new tab`);
+
+  const titleText = document.createElement("span");
+  titleText.className = "video-title";
+  titleText.textContent = video.title;
+
+  const indicator = document.createElement("span");
+  indicator.className = "external-indicator";
+  indicator.textContent = "↗";
+  indicator.setAttribute("aria-hidden", "true");
+
+  linkButton.append(titleText, indicator);
+  linkButton.addEventListener("click", async () => {
+    await browser.tabs.create({
+      url: `https://www.youtube.com/watch?v=${encodeURIComponent(video.id)}`
+    });
+  });
+
+  return linkButton;
 }
 
 function renderVideoList(videos) {
@@ -43,21 +92,21 @@ function renderVideoList(videos) {
   }
 
   empty.hidden = true;
-  summary.textContent = videos.length === 1 ? "Show 1 video watched today" : `Show ${videos.length} videos watched today`;
+  summary.textContent = videos.length === 1
+    ? "Show 1 video watched today"
+    : `Show ${videos.length} videos watched today`;
 
-  for (const video of (showAllVideos ? videos : videos.slice(0, INITIAL_VIDEO_LIMIT))) {
+  const visibleVideos = showAllVideos ? videos : videos.slice(0, INITIAL_VIDEO_LIMIT);
+
+  for (const video of visibleVideos) {
     const item = document.createElement("li");
     item.className = "video-item";
-
-    const title = document.createElement("span");
-    title.className = "video-title";
-    title.textContent = video.title;
-    title.title = video.title;
 
     const duration = document.createElement("span");
     duration.className = "video-duration";
     duration.textContent = formatDuration(video.seconds);
-    item.append(title, duration);
+
+    item.append(createVideoTitle(video), duration);
     list.append(item);
   }
 
@@ -70,16 +119,22 @@ async function render() {
   const totals = stored[DAILY_TOTALS_KEY] || {};
   const today = new Date();
   const day = dateKey(today);
+
   document.querySelector("#today").textContent = formatDuration(totals[day]);
   renderVideoList(getSortedVideos(stored[TODAY_VIDEOS_KEY], day));
 
   const history = document.querySelector("#history");
   history.replaceChildren();
+  const formatter = new Intl.DateTimeFormat(undefined, {
+    weekday: "short",
+    month: "short",
+    day: "numeric"
+  });
 
-  const formatter = new Intl.DateTimeFormat(undefined, { weekday: "short", month: "short", day: "numeric" });
   for (let offset = 0; offset < 7; offset += 1) {
     const date = new Date(today);
     date.setDate(today.getDate() - offset);
+
     const item = document.createElement("li");
     const label = document.createElement("span");
     const value = document.createElement("span");
@@ -96,6 +151,11 @@ document.querySelector("#showAllVideos").addEventListener("click", async () => {
 });
 
 document.querySelector("#resetToday").addEventListener("click", async () => {
+  const confirmed = window.confirm(
+    "Reset today's watch time and video breakdown? This cannot be undone."
+  );
+  if (!confirmed) return;
+
   const stored = await browser.storage.local.get(DAILY_TOTALS_KEY);
   const totals = stored[DAILY_TOTALS_KEY] || {};
   const day = dateKey(new Date());
@@ -111,8 +171,9 @@ document.querySelector("#resetToday").addEventListener("click", async () => {
 });
 
 browser.storage.onChanged.addListener((changes, area) => {
-  if (area === "local" && (changes[DAILY_TOTALS_KEY] || changes[TODAY_VIDEOS_KEY])) 
+  if (area === "local" && (changes[DAILY_TOTALS_KEY] || changes[TODAY_VIDEOS_KEY])) {
     render();
+  }
 });
 
 render();

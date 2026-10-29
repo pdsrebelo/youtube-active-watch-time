@@ -22,3 +22,36 @@ button { border: 1px solid #3a3d45; border-radius: 8px; padding: 9px 12px; backg
 button:hover { background: #2a2d34; }
 .reset-button, .secondary-button { width: 100%; }
 .secondary-button { margin-top: 8px; padding: 7px 10px; font-size: 12px; }
+
+.video-link {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  gap: 5px;
+  margin: -5px;
+  padding: 5px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+.video-link:hover,
+.video-link:focus-visible {
+  background: #24272e;
+  outline: none;
+}
+
+.video-link:hover .video-title,
+.video-link:focus-visible .video-title {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.external-indicator {
+  flex: 0 0 auto;
+  color: #a8abb3;
+  font-size: 12px;
+  line-height: 1.35;
+}

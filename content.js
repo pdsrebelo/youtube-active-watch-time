@@ -11,31 +11,20 @@
   function getContentIdentity() {
     const url = new URL(location.href);
     const id = url.searchParams.get("v");
-
-    if (id)
-      return { id, type: "video" };
-
-    if (url.pathname.startsWith("/shorts/"))
-      return { id: "youtube-shorts", type: "shorts" };
-
+    if (id) return { id, type: "video" };
+    if (url.pathname.startsWith("/shorts/")) return { id: "youtube-shorts", type: "shorts" };
     return { id: "unknown-youtube-video", type: "unknown" };
   }
 
   function cleanTitle(title) {
-    if (!title)
-      return null;
-
+    if (!title) return null;
     const cleaned = title.replace(/\s*-\s*YouTube\s*$/i, "").trim();
     return !cleaned || cleaned.toLowerCase() === "youtube" ? null : cleaned;
   }
 
   function getVideoTitle(identity) {
-    if (identity.type === "shorts")
-      return "YouTube Shorts";
-
-    if (identity.type === "unknown")
-      return "Unknown YouTube video";
-
+    if (identity.type === "shorts") return "YouTube Shorts";
+    if (identity.type === "unknown") return "Unknown YouTube video";
     return cleanTitle(document.querySelector("h1 yt-formatted-string")?.textContent) ||
       cleanTitle(document.querySelector('meta[name="title"]')?.getAttribute("content")) ||
       cleanTitle(document.title) || "Unknown YouTube video";
@@ -68,7 +57,7 @@
     const playing = !video.paused && !video.ended && video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA;
 
     if (playing && mediaDelta >= MIN_MEDIA_ADVANCE_SECONDS && wallDelta > 0 &&
-      wallDelta <= MAX_VALID_WALL_DELTA_SECONDS && document.visibilityState === "visible") {
+        wallDelta <= MAX_VALID_WALL_DELTA_SECONDS && document.visibilityState === "visible") {
       try {
         await browser.runtime.sendMessage({
           type: "WATCH_HEARTBEAT",
@@ -77,7 +66,7 @@
           videoType: identity.type,
           videoTitle: getVideoTitle(identity)
         });
-      } catch { }
+      } catch {}
     }
     previousMediaTime = video.currentTime;
     previousWallTime = now;
@@ -87,7 +76,6 @@
     const identity = getContentIdentity();
     resetSample(getPrimaryVideo(), identity.id);
   }
-
   document.addEventListener("visibilitychange", resetFromPage);
   window.addEventListener("pageshow", resetFromPage);
   window.addEventListener("pagehide", () => resetSample());
