@@ -9,16 +9,22 @@
 <body>
   <main>
     <p class="eyebrow">ACTIVE WATCH TIME</p>
-    <h1 id="today">0m</h1>
+    <h1 id="today">0s</h1>
     <p class="subtitle">Today</p>
-
-    <section>
+    <details id="videoDetails">
+      <summary><span id="videoSummary">Show videos watched today</span></summary>
+      <div class="video-content">
+        <ol id="videoList"></ol>
+        <button id="showAllVideos" class="secondary-button" type="button" hidden>Show all</button>
+        <p id="noVideos" class="empty-message" hidden>No videos counted today.</p>
+      </div>
+    </details>
+    <section class="history-section">
       <h2>Last 7 days</h2>
       <ol id="history"></ol>
     </section>
-
-    <p class="rule">Counts visible, advancing video. Excludes pause, buffering, background tabs and PiP.</p>
-    <button id="resetToday" type="button">Reset today</button>
+    <p class="rule">Counts visible, advancing video and supported Picture-in-Picture playback. Excludes paused, buffering and ordinary background playback.</p>
+    <button id="resetToday" class="reset-button" type="button">Reset today</button>
   </main>
   <script src="popup.js"></script>
 </body>

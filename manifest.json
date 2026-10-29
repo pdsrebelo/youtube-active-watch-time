@@ -2,16 +2,26 @@
   "manifest_version": 3,
   "name": "YouTube Active Watch Time",
   "version": "0.1.0",
-  "description": "Counts time spent actively watching visible, playing YouTube videos, including Picture-in-Picture. Paused, buffering and ordinary background playback are excluded.",
-  "permissions": ["storage"],
-  "host_permissions": ["https://www.youtube.com/*"],
+  "description": "Counts time spent actively watching visible, playing YouTube videos. Paused, buffering, background-tab and PiP time are excluded.",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://www.youtube.com/*"
+  ],
   "background": {
-    "scripts": ["background.js"]
+    "scripts": [
+      "background.js"
+    ]
   },
   "content_scripts": [
     {
-      "matches": ["https://www.youtube.com/*"],
-      "js": ["content.js"],
+      "matches": [
+        "https://www.youtube.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
       "run_at": "document_idle"
     }
   ],

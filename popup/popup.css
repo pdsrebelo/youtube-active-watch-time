@@ -1,14 +1,24 @@
 :root { color-scheme: light dark; font: 14px/1.4 system-ui, sans-serif; }
-body { margin: 0; min-width: 300px; background: #101114; color: #f7f7f8; }
+body { margin: 0; min-width: 340px; max-width: 380px; background: #101114; color: #f7f7f8; }
 main { padding: 20px; }
 .eyebrow { margin: 0; color: #ff4e45; font-size: 11px; font-weight: 800; letter-spacing: .12em; }
 h1 { margin: 4px 0 0; font-size: 40px; line-height: 1; }
-.subtitle { margin: 5px 0 20px; color: #a8abb3; }
-section { border-top: 1px solid #2b2d33; padding-top: 14px; }
+.subtitle { margin: 5px 0 18px; color: #a8abb3; }
+details { margin-bottom: 18px; border: 1px solid #2b2d33; border-radius: 10px; background: #17191e; }
+summary { padding: 11px 12px; font-weight: 600; cursor: pointer; user-select: none; }
+summary:hover { background: #1d1f25; border-radius: 10px; }
+.video-content { padding: 0 12px 12px; }
+#videoList, #history { list-style: none; margin: 0; padding: 0; }
+.video-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: start; padding: 9px 0; border-top: 1px solid #2b2d33; }
+.video-title { min-width: 0; color: #d7d9df; line-height: 1.35; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.video-duration { color: #fff; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.empty-message { margin: 8px 0 0; color: #8f929b; font-size: 12px; }
+.history-section { border-top: 1px solid #2b2d33; padding-top: 14px; }
 h2 { margin: 0 0 8px; font-size: 14px; }
-ol { list-style: none; margin: 0; padding: 0; }
-li { display: flex; justify-content: space-between; padding: 5px 0; color: #cfd1d7; }
-li span:last-child { color: #fff; font-variant-numeric: tabular-nums; }
+#history li { display: flex; justify-content: space-between; padding: 5px 0; color: #cfd1d7; }
+#history li span:last-child { color: #fff; font-variant-numeric: tabular-nums; }
 .rule { margin: 16px 0; color: #8f929b; font-size: 12px; }
-button { width: 100%; border: 1px solid #3a3d45; border-radius: 8px; padding: 9px 12px; background: #202228; color: #fff; cursor: pointer; }
+button { border: 1px solid #3a3d45; border-radius: 8px; padding: 9px 12px; background: #202228; color: #fff; cursor: pointer; }
 button:hover { background: #2a2d34; }
+.reset-button, .secondary-button { width: 100%; }
+.secondary-button { margin-top: 8px; padding: 7px 10px; font-size: 12px; }

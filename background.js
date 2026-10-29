@@ -1,34 +1,59 @@
 "use strict";
-
-const STORAGE_KEY = "dailyWatchSeconds";
+const DAILY_TOTALS_KEY = "dailyWatchSeconds";
+const TODAY_VIDEOS_KEY = "todayVideoWatch";
 const LAST_BUCKET_KEY = "lastCountedEpochSecond";
 
 function localDateKey(timestamp) {
   const date = new Date(timestamp);
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function sanitizeVideoId(id) {
+  return typeof id === "string" && id.trim() ? id.trim().slice(0, 100) : "unknown-youtube-video";
+}
+
+function sanitizeTitle(title, id) {
+  if (typeof title === "string" && title.trim()) return title.trim().slice(0, 300);
+  return id === "youtube-shorts" ? "YouTube Shorts" : "Unknown YouTube video";
+}
+
+function shouldReplaceTitle(existing, incoming) {
+  const generic = new Set(["Unknown YouTube video", "YouTube"]);
+  return Boolean(incoming) && (!existing || (generic.has(existing) && !generic.has(incoming)) ||
+    (existing !== incoming && !generic.has(incoming)));
 }
 
 browser.runtime.onMessage.addListener(async (message) => {
   if (message?.type !== "WATCH_HEARTBEAT") return undefined;
-
   const observedAt = Number(message.observedAt) || Date.now();
   const epochSecond = Math.floor(observedAt / 1000);
-  const stored = await browser.storage.local.get([STORAGE_KEY, LAST_BUCKET_KEY]);
+  const day = localDateKey(observedAt);
+  const videoId = sanitizeVideoId(message.videoId);
+  const videoTitle = sanitizeTitle(message.videoTitle, videoId);
+  const stored = await browser.storage.local.get([DAILY_TOTALS_KEY, TODAY_VIDEOS_KEY, LAST_BUCKET_KEY]);
+  if (stored[LAST_BUCKET_KEY] === epochSecond)
+    return { counted: false, reason: "already-counted" };
 
-  // Globally deduplicate heartbeats, so two visible windows cannot double-count.
-  if (stored[LAST_BUCKET_KEY] === epochSecond) return { counted: false };
+  const dailyTotals = stored[DAILY_TOTALS_KEY] || {};
+  dailyTotals[day] = (Number(dailyTotals[day]) || 0) + 1;
 
-  const daily = stored[STORAGE_KEY] || {};
-  const dateKey = localDateKey(observedAt);
-  daily[dateKey] = (Number(daily[dateKey]) || 0) + 1;
+  let breakdown = stored[TODAY_VIDEOS_KEY];
+  if (!breakdown || breakdown.date !== day || !breakdown.videos || typeof breakdown.videos !== "object") {
+    breakdown = { date: day, videos: {} };
+  }
+
+  if (!breakdown.videos[videoId])
+    breakdown.videos[videoId] = { title: videoTitle, seconds: 0 };
+
+  const record = breakdown.videos[videoId];
+  record.seconds = (Number(record.seconds) || 0) + 1;
+  if (shouldReplaceTitle(record.title, videoTitle)) record.title = videoTitle;
 
   await browser.storage.local.set({
-    [STORAGE_KEY]: daily,
+    [DAILY_TOTALS_KEY]: dailyTotals,
+    [TODAY_VIDEOS_KEY]: breakdown,
     [LAST_BUCKET_KEY]: epochSecond
   });
 
-  return { counted: true, dateKey, seconds: daily[dateKey] };
+  return { counted: true, dateKey: day, videoId, dailySeconds: dailyTotals[day], videoSeconds: record.seconds };
 });
