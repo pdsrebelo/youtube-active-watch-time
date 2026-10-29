@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "YouTube Active Watch Time",
-  "version": "0.1.0",
-  "description": "Counts time spent actively watching visible, playing YouTube videos. Paused, buffering, background-tab and PiP time are excluded.",
+  "version": "0.2.0",
+  "description": "Counts active YouTube watch time, including supported Picture-in-Picture playback. Paused, buffering and ordinary background playback are excluded.",
   "permissions": [
     "storage"
   ],
