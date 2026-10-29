@@ -2,7 +2,7 @@
 
 A private Firefox extension that counts real elapsed time while a YouTube video is playing, advancing, and visibly available either in its Firefox tab or through Picture-in-Picture.
 
-## Version 0.3 rules
+## Version 0.4 rules
 
 Counts:
 
@@ -23,6 +23,16 @@ Does not count:
 - Sleeping or heavily suspended timers
 
 Two simultaneous qualifying videos are globally capped to approximately one counted second per real second.
+
+## Toolbar badge
+
+The toolbar badge displays a compact form of the same daily total shown as **Active Watch Time** in the popup.
+
+- Below one hour: `0m` to `59m`
+- From one hour through nine hours: `1h00` to `9h59`
+- At ten hours or more: whole hours, such as `10h`
+
+The badge omits seconds and changes only when its displayed value changes. It is restored from `browser.storage.local` when Firefox or the extension starts, and it immediately reflects **Reset today**.
 
 ## Picture-in-Picture
 
@@ -76,15 +86,15 @@ web-ext lint
 web-ext run
 ```
 
-## Version 0.3 acceptance tests
+## Version 0.4 acceptance tests
 
-1. Expand today's video breakdown.
-2. Click a normal video title. Expect it to open in a new Firefox tab.
-3. Activate the title with the keyboard. Expect Enter or Space to open it.
-4. Confirm that `YouTube Shorts` and `Unknown YouTube video` have no link indicator and cannot be opened.
-5. Select **Reset today**, then cancel the confirmation. Expect no data to be deleted.
-6. Select **Reset today**, then accept the confirmation. Expect today's total and breakdown to be cleared.
-7. Confirm that normal playback, pause, PiP, visibility, navigation, and live popup updates still behave as in version 0.2.
+1. Load or reload the extension. Expect the badge to show today's compact total immediately.
+2. Watch until the next full minute. Expect the badge to advance once at the minute boundary.
+3. Pause the video. Expect the badge not to change.
+4. Open the popup. Expect the precise total to match the badge's compact representation.
+5. Confirm **Reset today**. Expect the popup to show `0s` and the badge to show `0m`.
+6. Reload the extension or restart Firefox. Expect the badge to restore today's stored total.
+7. Confirm that clickable videos, PiP, visibility, navigation, and the video breakdown still behave as in version 0.3.
 
 ## Package
 
